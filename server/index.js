@@ -6,6 +6,7 @@ import ProductRoute from './routes/ProductRoutes.js';
 import UserRoute from './routes/UserRoutes.js';
 import AuthRoute from "./routes/AuthRoute.js";
 import AdminRoute from "./routes/AdminRoute.js";
+import HomeRoute from "./routes/HomeRoute.js";
 import { PrismaClient } from '@prisma/client';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 
@@ -45,6 +46,7 @@ app.use(ProductRoute);
 app.use(UserRoute);
 app.use(AuthRoute);
 app.use(AdminRoute);
+app.use(HomeRoute);
 
 app.listen(process.env.APP_PORT, () => {
     console.log(`Server up and running on port ${process.env.APP_PORT}`);

@@ -12,7 +12,7 @@ import {
 
 
 const router = express.Router();
-router.post('/admin', adminOnly, LoginAdmin);
+router.post('/admin', LoginAdmin);
 
 
 router.get('/admin/products', verifyUser, adminOnly, getProduct);

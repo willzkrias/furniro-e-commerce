@@ -6,20 +6,12 @@ import { generateToken } from "./AuthUser.js";
 const prisma = new PrismaClient();
 
 
-export const adminOnly = async (req, res, next) => {
-    const user = await prisma.user.findUnique({
-        where: {
-            id: req.session.userId
-        },
-    });
-    if (!user) return res.status(404).json({ msg: "User not found" });
-    if (user.role !== "Admin") return res.status(403).json({ msg: "This access admin only" });
-    next();
-}
+
 
 export const LoginAdmin = async (req, res, next) => {
     const { email, password } = req.body;
     // const userId = req.session.userId
+
 
     try {
         const user = await prisma.user.findUnique({
@@ -27,16 +19,13 @@ export const LoginAdmin = async (req, res, next) => {
                 email: email,
             },
         });
-        if (!user) {
+        if (!user || !user.password) {
             return res.status(403).json({ msg: "User with existing account cannot login as admin" });
         }
 
-        if (!user.password) {
-            return res.status(403).json({ msg: "User with existing account cannot login as admin" });
-        }
-        // if (!user.role === "Admin") return res.status(403).json({
-        //     msg: "Akses dilarang"
-        // });
+        if (user.role === "User") return res.status(403).json({
+            msg: "Akses dilarang untuk user"
+        });
 
         const validPassword = await argon2.verify(user.password, password);
         if (!validPassword) return res.status(400).json({ msg: "Invalid password" });
@@ -60,3 +49,27 @@ export const LoginAdmin = async (req, res, next) => {
 
 
 }
+export const adminOnly = async (req, res, next) => {
+
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: req.session.userId,
+            },
+        });
+
+        if (!user) {
+            return res.status(404).json({ msg: "User not found" });
+        }
+
+        if (user.role !== "Admin") {
+            return res.status(403).json({ msg: "This access is for admins only" });
+        }
+
+        next();
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ msg: error.message });
+    }
+};

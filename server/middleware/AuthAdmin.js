@@ -6,8 +6,6 @@ import { generateToken } from "./AuthUser.js";
 const prisma = new PrismaClient();
 
 
-
-
 export const LoginAdmin = async (req, res, next) => {
     const { email, password } = req.body;
     // const userId = req.session.userId
@@ -32,14 +30,18 @@ export const LoginAdmin = async (req, res, next) => {
         req.session.userId = user.id;
         const token = generateToken(user);
         res.status(200).json({
+            statusCode: 200,
             msg: "Login successfull as Admin",
-            token: token,
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-            }
+            // token: token,
+            data: {
+                token: token
+            },
+            // user: {
+            //     id: user.id,
+            //     name: user.name,
+            //     email: user.email,
+            //     role: user.role,
+            // }
         })
 
     } catch (error) {

@@ -4,8 +4,12 @@ const prisma = new PrismaClient();
 
 export const getProduct = async (req, res) => {
     try {
-        // gunakan include untuk menambahkan model category dan color
+
         const response = await prisma.product.findMany();
+
+
+        // gunakan include untuk menambahkan model category dan color
+
         // Membuat respons yang berisi data produk dengan nama kategori dan warna
         // const productsWithCategoryAndColorName = response.map(product => ({
         //     name: product.name,
@@ -46,11 +50,16 @@ export const getProductById = async (req, res) => {
         if (!product) {
             res.status(404).json({ msg: "Product Not found" });
         }
-        res.status(200).json(product);
+        res.status(200).json({
+            msg: "Product details successfully provided",
+            product,
+        });
     } catch (error) {
         res.status(500).json({ msg: error.message })
     }
 }
+
+
 export const createProduct = async (req, res) => {
     const { name, description, image, price, height, weight, width, warranty, quantity, color_id, category_id } = req.body;
     try {

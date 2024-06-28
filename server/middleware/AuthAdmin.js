@@ -5,12 +5,59 @@ import { PrismaClient } from "@prisma/client";
 import { generateToken } from "./AuthUser.js";
 const prisma = new PrismaClient();
 
+// export const LoginAdmin = async (req, res, next) => {
+//     const { email, password } = req.body;
 
+//     try {
+//         const user = await prisma.user.findUnique({
+//             where: { email: email },
+//         });
+//         if (!user || !user.password) {
+//             return res.status(403).json({ msg: "User with existing account cannot login as admin" });
+//         }
+
+//         if (user.role === "User") return res.status(403).json({ msg: "Akses dilarang untuk user" });
+
+//         const validPassword = await argon2.verify(user.password, password);
+//         if (!validPassword) return res.status(400).json({ msg: "Invalid password" });
+
+//         req.session.userId = user.id;
+
+//         // Check if there is a valid token in the session
+//         if (req.session.token) {
+//             try {
+//                 jwt.verify(req.session.token, publicKey, { algorithms: ['RS256'] });
+//                 return res.status(200).json({
+//                     statusCode: 200,
+//                     msg: "Login successful as Admin",
+//                     data: { token: req.session.token }
+//                 });
+//             } catch (error) {
+//                 // Token is not valid, generate a new one
+//             }
+//         }
+
+//         const token = generateToken(user);
+//         req.session.token = token;
+//         res.status(200).json({
+//             statusCode: 200,
+//             msg: "Login successful as Admin",
+//             data: { token: token }
+//         });
+
+//     } catch (error) {
+//         res.status(500).json({ msg: error.message });
+//     }
+// };
 export const LoginAdmin = async (req, res, next) => {
     const { email, password } = req.body;
     // const userId = req.session.userId
 
-
+    if (req.session.userId) {
+        return res.status(400).json({
+            msg: "You Already Logged in "
+        });
+    }
     try {
         const user = await prisma.user.findUnique({
             where: {
@@ -36,12 +83,7 @@ export const LoginAdmin = async (req, res, next) => {
             data: {
                 token: token
             },
-            // user: {
-            //     id: user.id,
-            //     name: user.name,
-            //     email: user.email,
-            //     role: user.role,
-            // }
+
         })
 
     } catch (error) {

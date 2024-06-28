@@ -6,7 +6,11 @@ const prisma = new PrismaClient();
 
 export const Login = async (req, res) => {
     const { email, password } = req.body;
-
+    if (req.session.userId) {
+        return res.status(400).json({
+            msg: "You Already logged in "
+        });
+    }
     try {
         const user = await prisma.user.findUnique({
             where: {
@@ -35,7 +39,8 @@ export const Login = async (req, res) => {
         res.status(500).json({ msg: error.message });
     }
 
-}
+};
+
 
 export const Me = async (req, res) => {
     if (!req.session.userId) {
@@ -58,7 +63,9 @@ export const Me = async (req, res) => {
 
 export const Logout = (req, res) => {
     req.session.destroy((err) => {
-        if (err) return res.status(400).json({ msg: "Tidak dapat logout" });
+        if (err) {
+            return res.status(400).json({ msg: "Tidak dapat logout" });
+        }
         res.status(200).json({ msg: "Anda telah logout" });
-    })
-}
+    });
+};
